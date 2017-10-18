@@ -182,7 +182,7 @@ def process(inputString):
     #orgline = line
     wordlabel.append(["Input", line])
     
-    um=['pkg','box','set','dozen','package','st','packs','pk','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle']
+    um=['pkg','box','set','dozen','package','st','packs','pk','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles']
 
 
     regex = r"\d+\""
@@ -190,6 +190,10 @@ def process(inputString):
     
     if not len(match):
         regex = r"\d+\s+x+\s+\d"
+        match = re.findall(regex, line)
+
+    if not len(match):
+        regex = r"\d+x+\d"
         match = re.findall(regex, line)
         
     if len(match): 
@@ -417,6 +421,10 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
     word_wbb_list = []
     x = ''
 
+    thisitem['Item']=thisitem['Item'].replace(thisitem['UM'],'')
+    thisitem['Item']=thisitem['Item'].replace(thisitem['Color'],'')
+
+
     for item in thisitem['Item'].split():
         word_wbb = {}
         word_wbb['word'] = item
@@ -437,8 +445,6 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         res_line['label'] = True
         #line = re.sub(r'^[0-9]$', '', res_line['product'])
 
-        x=x.replace(thisitem['Color'],'')
-        x=x.replace(thisitem['UM'],'')
         res_line['product'] = x.strip()  #thisitem['Item']
         res_line['quantity'] = thisitem['Quantity']
         res_line['words'] = word_wbb_list
