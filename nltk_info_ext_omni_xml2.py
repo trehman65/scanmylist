@@ -201,7 +201,7 @@ def process(inputString):
         wordlabel.append(["Dimensions", match[0]])
 
     for word in line.split():
-        if word in webcolors.CSS3_NAMES_TO_HEX:
+        if word.lower() in webcolors.CSS3_NAMES_TO_HEX:
             mytags.append(word)
             wordlabel.append(["Color", word])
         if word.lower() in um:
@@ -430,8 +430,12 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
     word_wbb_list = []
     x = ''
 
-    thisitem['Item']=thisitem['Item'].replace(thisitem['UM'],'')
-    thisitem['Item']=thisitem['Item'].replace(thisitem['Color'],'')
+    for tag in thisitem['Tags']:
+        thisitem['Item']=thisitem['Item'].replace(tag,'')
+
+
+    # thisitem['Item']=thisitem['Item'].replace(thisitem['UM'],'')
+    # thisitem['Item']=thisitem['Item'].replace(thisitem['Color'],'')
 
 
     for item in thisitem['Item'].split():
