@@ -184,7 +184,7 @@ def process(inputString):
     
     um=['rolls','sets','pkg','box','set','dozen','package','st','packs','pks','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles','pack','pads','tray','ream','container','carton','tubes','bundle','pair','ct']
 
-
+    mytags=[]
     regex = r"\d+\""
     match = re.findall(regex, line)
     
@@ -197,12 +197,15 @@ def process(inputString):
         match = re.findall(regex, line)
         
     if len(match): 
+        mytags.append(match[0])
         wordlabel.append(["Dimensions", match[0]])
 
     for word in line.split():
         if word in webcolors.CSS3_NAMES_TO_HEX:
+            mytags.append(word)
             wordlabel.append(["Color", word])
         if word.lower() in um:
+            mytags.append(word)
             wordlabel.append(["UM", word])
 
 
@@ -312,6 +315,7 @@ def process(inputString):
             #print line
             wordlabel.append(
                 [evaluateString(line.strip(), dictSubjects), line])
+        wordlabel.append(["tags",mytags])
 
     return wordlabel
 
@@ -381,6 +385,8 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
     thisitem["Color"] = ""
     thisitem["UM"] = ""
     thisitem["Dimensions"] = ""
+    thisitem["Tags"] = ""
+
 
 
 
@@ -389,8 +395,11 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
 
     # print "New Sentence"
     for arr in out:
-        # print arr
-        if arr[0] != "Not a Product":
+        
+        if arr[0]=='tags':
+            thisitem['Tags'] = arr[1];
+
+        elif arr[0] != "Not a Product":
             thisitem[arr[0]] = arr[1].replace("\"", " ")
 
     quant_check = 0
@@ -449,11 +458,10 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         res_line['quantity'] = thisitem['Quantity']
         res_line['words'] = word_wbb_list
         res_line['comment'] = thisitem['Comment']
-        res_line['color'] = thisitem['Color']
-        res_line['um'] = thisitem['UM']
-        res_line['dimensions'] = thisitem['Dimensions']
-
-
+        # res_line['color'] = thisitem['Color']
+        # res_line['um'] = thisitem['UM']
+        # res_line['dimensions'] = thisitem['Dimensions']
+        res_line['tags'] = thisitem['Tags']
 
     else:
         res_line['label'] = False
