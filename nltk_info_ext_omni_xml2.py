@@ -182,7 +182,7 @@ def process(inputString):
     #orgline = line
     wordlabel.append(["Input", line])
     
-    um=['pkg','box','set','dozen','package','st','packs','pk','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles']
+    um=['rolls','sets','pkg','box','set','dozen','package','st','packs','pks','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles','pack','pads','tray','ream','container','carton','tubes','bundle','pair','ct']
 
 
     regex = r"\d+\""
