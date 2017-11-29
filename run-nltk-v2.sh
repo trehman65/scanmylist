@@ -33,4 +33,4 @@ echo ================================================================
 echo
 
 
-python plotRect.py $2
+#python plotRect.py $2

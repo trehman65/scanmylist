@@ -11,10 +11,12 @@ fn=0
 tp=0
 tn=0
 
-for test_file in os.listdir('TestData'):
+files = [f for f in os.listdir('TestData') if f.endswith('_nltk.json')]
+
+
+for test_file in files:
 	count=count+1
-	if test_file.endswith('.csv'):
-		continue
+
 	print('File: '+test_file)
 	gt_file = test_file + '.csv'
 	with open('TestData/'+test_file) as fx:
@@ -55,16 +57,13 @@ for test_file in os.listdir('TestData'):
 
 		if len(test[1]) !=0 and len(gt[1]) !=0:
 			tp += 1
-				
-
-
 		if test[2] == gt[2] and test[1] == gt[1]:
 			correct += 1
 			cor += 1
 	print('\tAccuracy: ', 100*cor/tot)
 
 print "\n ANALYTICS"
-print "Total Files: ",count/2
+print "Total Files: ",count
 print'Final Accuray: ', 100*correct/total
 print "True Negative: ",100*tn/total
 print "True positive ",100*tp/total
