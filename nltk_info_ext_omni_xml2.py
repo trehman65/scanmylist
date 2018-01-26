@@ -170,7 +170,6 @@ def dict_check(inputString):
 
 
 def process(inputString):
-    #print "BHAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRRRRRRRRRRUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
 
     wordlabel = []
     comment = ""
@@ -198,20 +197,19 @@ def process(inputString):
         
     if len(match): 
         mytags.append(match[0])
-        wordlabel.append(["Dimensions", match[0]])
+        #wordlabel.append(["Dimensions", match[0]])
 
     for word in line.split():
         if word.lower() in webcolors.CSS3_NAMES_TO_HEX:
             mytags.append(word)
-            wordlabel.append(["Color", word])
+         #   wordlabel.append(["Color", word])
         if word.lower() in um:
             mytags.append(word)
-            wordlabel.append(["UM", word])
+          #  wordlabel.append(["UM", word])
 
 
 
 
-    #print line
     line = line.replace('watercolor', 'water color')
     line = line.replace(' w/o ', 'without')
     line = line.replace(' w/', 'with ')
@@ -241,6 +239,7 @@ def process(inputString):
     line = re.sub(r'(?<![0-9])[/](?![0-9])', ' or ', line)
     line = re.sub(r'(?<![0-9])[0](?![0-9])', '', line)
 
+
     if line == '':
         return wordlabel
 
@@ -250,72 +249,62 @@ def process(inputString):
     line = line.strip()
 
 
-
-    #input = line
     comment = line.split("(")[-1].split(")")[0]
     if comment != line:
         line = line.replace(comment, "")
         line = line.strip(string.punctuation)
         wordlabel.append(["Comment", comment])
 
-    input = line
+    #removes non ascii characters e.g bullets
+    clipedline = re.sub(r'([^\s\w]|_)+', ' ', line)
+    clipedline = dict_check(clipedline)
 
-
-
-    if len(line) < 1:
+    if len(clipedline) < 1:
         return wordlabel
 
-    if (countVerbs(line) >= 2):
+    if (countVerbs(clipedline) >= 2):
         #print wordlabel
-        wordlabel.append(["Not a Product", line])
+        wordlabel.append(["Not a Product", clipedline])
         return wordlabel
     else:
-        input = re.sub(r'([^\s\w]|_)+', ' ', input)
-        line = re.sub(r'([^\s\w]|_)+', ' ', line)
-
-        if line.strip() == '' or input.strip() == '':
+    	
+        if clipedline.strip() == '':
             return ''
 
-        res_line = nltk.word_tokenize(input)
-        tags = nltk.pos_tag(res_line)
+        res_line = nltk.word_tokenize(clipedline)
+        postags = nltk.pos_tag(res_line)
         #print tags
-        if (input.isdigit()):
-            wordlabel.append(["Not a Product", line])
+        if (clipedline.isdigit()):
+            wordlabel.append(["Not a Product", clipedline])
             #print wordlabel
             return wordlabel
 
         # first word is a number
 
-        if tags[0][0].isdigit():
+        if postags[0][1] == "CD":
 
-            if len(input.replace(tags[0][0], '', 1).strip()) < 1:
-                input = dict_check(line)
+            if len(clipedline.replace(postags[0][0], '', 1).strip()) < 1:
                 wordlabel.append(["Not a Product", line])
-                #print wordlabel
                 return wordlabel
 
-            wordlabel.append(["Quantity", tags[0][0]])
-            input = dict_check(input)
-            #print input
-            #wordlabel.append(["Item", input.replace(tags[0][0], '', 1).strip()])
-            wordlabel.append(["Item", input.strip()])
-            #print wordlabel
+            wordlabel.append(["Quantity", postags[0][0]])
+            
+            wordlabel.append(["Item", clipedline.strip()])
+            
         # last word is quantity
-        elif tags[len(tags) - 1][0].isdigit():
-            wordlabel.append(["Quantity", tags[len(tags) - 1][0]])
-            input = dict_check(input)
-            #print input
+        elif postags[len(postags) - 1][1] == "CD":
+
+            wordlabel.append(["Quantity", postags[len(postags) - 1][0]])
             wordlabel.append(
-                ["Item", input.strip(tags[len(tags) - 1][0]).strip()])
+                ["Item", clipedline.strip(postags[len(postags) - 1][0]).strip()])
             #print wordlabel
 
         else:
-
-            line = dict_check(line)
-            #print line
-            wordlabel.append(
-                [evaluateString(line.strip(), dictSubjects), line])
+            wordlabel.append([evaluateString(line.strip(), dictSubjects), line])
+        
         wordlabel.append(["tags",mytags])
+
+        print wordlabel
 
     return wordlabel
 
