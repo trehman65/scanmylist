@@ -64,6 +64,7 @@ for test_file in files:
 
 print "\n ANALYTICS"
 print "Total Files: ",count
+
 print'Final Accuray: ', 100*correct/total
 print "True Negative: ",100*tn/total
 print "True positive ",100*tp/total
