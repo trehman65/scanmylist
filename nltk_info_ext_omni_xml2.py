@@ -181,7 +181,7 @@ def process(inputString):
     #orgline = line
     wordlabel.append(["Input", line])
     
-    um=['rolls','sets','pkg','box','set','dozen','package','st','packs','pks','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles','pack','pads','tray','ream','container','carton','tubes','bundle','pair','ct']
+    um=['rolls','sets','pkg','box','set','dozen','package','st','packs','pks','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles','pack','pads','tray','ream','container','carton','tubes','bundle','pair','ct','containers','roll','rolls']
 
     mytags=[]
     regex = r"\d+\""
@@ -255,10 +255,16 @@ def process(inputString):
         line = line.strip(string.punctuation)
         wordlabel.append(["Comment", comment])
 
-    #removes non ascii characters e.g bullets
-    clipedline = re.sub(r'([^\s\w]|_)+', ' ', line)
-    clipedline = dict_check(clipedline)
+    #remove tags from the item
+    print line
+    print mytags
+    for tag in mytags:
+        line=line.replace(tag,'')
+    print line
 
+    #removes bullets
+    clipedline = re.sub(r'([^\s\w])', ' ', line)
+    
     if len(clipedline) < 1:
         return wordlabel
 
@@ -287,6 +293,7 @@ def process(inputString):
 
             wordlabel.append(["Quantity", postags[0][0]])
 
+            clipedline = dict_check(clipedline)
             item=clipedline.replace(postags[0][0],'')
             wordlabel.append(["Item", item.strip()])
             
@@ -294,16 +301,18 @@ def process(inputString):
         elif postags[len(postags) - 1][1] == "CD":
 
             wordlabel.append(["Quantity", postags[len(postags) - 1][0]])
+            clipedline = dict_check(clipedline)
             item=clipedline.replace(postags[len(postags) - 1][0],'')
             wordlabel.append(["Item", item.strip()])
 
 
         else:
-            wordlabel.append([evaluateString(line.strip(), dictSubjects), line])
+            clipedline = dict_check(clipedline)
+            wordlabel.append([evaluateString(clipedline.strip(), dictSubjects), clipedline])
         
         wordlabel.append(["tags",mytags])
 
-        print wordlabel
+#        print wordlabel
 
     return wordlabel
 
@@ -356,23 +365,12 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         else:
             out = process(line)
 
-    #################### REMOVING SPECIAL CHARACTERS FROM THE PRODUCT QUERY ###############
-    # for ww in out:
-    #     #print ww
-    #     if ww[0] == 'Item':
-    #         #print ww
-    #         ww[1] = re.sub(r'[()0-9&#@!\/.,]+$', '', ww[1])
-    #         #print ww
-    #         #print
 
     thisitem = {}
     thisitem["Comment"] = ""
     thisitem["Label"] = "Not a Product"
     thisitem["Quantity"] = ""
     thisitem["Item"] = ""
-    thisitem["Color"] = ""
-    thisitem["UM"] = ""
-    thisitem["Dimensions"] = ""
     thisitem["Tags"] = ""
 
 
@@ -389,6 +387,8 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
 
         elif arr[0] != "Not a Product":
             thisitem[arr[0]] = arr[1].replace("\"", " ")
+
+#assigning quantity
 
     quant_check = 0
 
@@ -415,15 +415,12 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
             thisitem['Item'] = thisitem['Item'].rstrip(str(pos_tags[-1][0]))
 
     #################################################
+    
+    #removing tags from the item
     word_wbb_list = []
     x = ''
-
-    for tag in thisitem['Tags']:
-        thisitem['Item']=thisitem['Item'].replace(tag,'')
-
-
-    # thisitem['Item']=thisitem['Item'].replace(thisitem['UM'],'')
-    # thisitem['Item']=thisitem['Item'].replace(thisitem['Color'],'')
+    # for tag in thisitem['Tags']:
+    #     thisitem['Item']=thisitem['Item'].replace(tag,'')
 
 
     for item in thisitem['Item'].split():
@@ -450,9 +447,6 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         res_line['quantity'] = thisitem['Quantity']
         res_line['words'] = word_wbb_list
         res_line['comment'] = thisitem['Comment']
-        # res_line['color'] = thisitem['Color']
-        # res_line['um'] = thisitem['UM']
-        # res_line['dimensions'] = thisitem['Dimensions']
         res_line['tags'] = thisitem['Tags']
 
     else:
