@@ -117,7 +117,7 @@ def dict_check(inputString):
         'January', 'February', 'March', 'April', 'May', 'June', 'July',
         'August', 'September', 'October', 'November', 'December', 'Elementary', 'Lists', 'List',
         'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth', 'Eleventh', 'Tweleveth',
-		'1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'
+        '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'
     ]
     for exclude in exclude_list:
         d.remove(exclude)
@@ -202,13 +202,11 @@ def process(inputString):
     for word in line.split():
         if word.lower() in webcolors.CSS3_NAMES_TO_HEX:
             mytags.append(word)
-         #   wordlabel.append(["Color", word])
         if word.lower() in um:
             mytags.append(word)
-          #  wordlabel.append(["UM", word])
 
 
-
+    ## INSERT MORE TAGS HERE
 
     line = line.replace('watercolor', 'water color')
     line = line.replace(' w/o ', 'without')
@@ -273,7 +271,7 @@ def process(inputString):
         wordlabel.append(["Not a Product", clipedline])
         return wordlabel
     else:
-    	
+        
         if clipedline.strip() == '':
             return ''
 
@@ -379,7 +377,6 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
     if type(out) is int:
         continue
 
-    # print "New Sentence"
     for arr in out:
         
         if arr[0]=='tags':
@@ -389,7 +386,6 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
             thisitem[arr[0]] = arr[1].replace("\"", " ")
 
 #assigning quantity
-
     quant_check = 0
 
     if (len(thisitem["Item"]) != 0):
@@ -414,15 +410,11 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         if pos_tags[-1][1] == 'IN' or pos_tags[-1][1] == 'CC':
             thisitem['Item'] = thisitem['Item'].rstrip(str(pos_tags[-1][0]))
 
-    #################################################
     
-    #removing tags from the item
     word_wbb_list = []
     x = ''
-    # for tag in thisitem['Tags']:
-    #     thisitem['Item']=thisitem['Item'].replace(tag,'')
-
-
+    
+    #find boxes for items
     for item in thisitem['Item'].split():
         word_wbb = {}
         word_wbb['word'] = item
@@ -434,27 +426,46 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
                 break
 
         word_wbb_list.append(word_wbb)
+    
+    # find boxes for tags
+    tags_wbb_list = []
+    y = ''
+    
+    for tag in thisitem['Tags']:
+        tags_wbb = {}
+        tags_wbb['tag'] = tag
+
+        for k in word_wbb_dict.keys():
+            if tag in k:
+                y = y + tag + " "
+                tags_wbb['tag_bounding_box'] = word_wbb_dict.get(k)
+                break
+
+        tags_wbb_list.append(tags_wbb)
+
+
+    
+
 
     res_line = {}
     res_line['input'] = line
 
     if thisitem['Label'].strip() == "Product" and x != '':
         
-        res_line['label'] = True
-        #line = re.sub(r'^[0-9]$', '', res_line['product'])
-
-        res_line['product'] = x.strip()  #thisitem['Item']
-        res_line['quantity'] = thisitem['Quantity']
-        res_line['words'] = word_wbb_list
-        res_line['comment'] = thisitem['Comment']
-        res_line['tags'] = thisitem['Tags']
+        res_line['Label'] = True
+        res_line['Product'] = thisitem['Item']
+        res_line['Quantity'] = thisitem['Quantity']
+        res_line['ItemBoxes'] = word_wbb_list
+        res_line['TagsBoxes'] = tags_wbb_list
+        res_line['Comment'] = thisitem['Comment']
+        res_line['Tags'] = thisitem['Tags']
 
     else:
-        res_line['label'] = False
+        res_line['Label'] = False
 
-        res_line['product'] = ''  #thisitem['Item']
-        res_line['quantity'] = ''
-        res_line['words'] = ''
+        res_line['Product'] = ''  #thisitem['Item']
+        res_line['Quantity'] = ''
+        res_line['ItemBoxes'] = ''
 
     productList.append(res_line)
     #break
