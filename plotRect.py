@@ -30,9 +30,29 @@ with open(inputJson) as data_file:
 lines=data['ie_result']['lines']
 
 for line in lines:
-	if line['label']== 1:
-		qty = line['quantity']
-		words = line['words']
+	if line['Label']== 1:
+		qty = line['Quantity']
+
+		words = line['TagsBoxes']
+
+
+		for word in words:
+			box = word['tag_bounding_box']
+
+			# t = int(box['top'])*300/1440
+			# l = int(box['left'])*300/1440
+			# b = int(box['bottom'])*300/1440
+			# r = int(box['right'])*300/1440
+			
+			t = int(box['top'])
+			l = int(box['left'])
+			b = int(box['bottom'])
+			r = int(box['right'])
+			
+			cv2.rectangle(overlay,(l,t),(r,b),(255,0,0),-1)
+
+
+		words = line['ItemBoxes']
 		# print line['product']
 		for word in words:
 			box = word['word_bounding_box']
@@ -48,6 +68,7 @@ for line in lines:
 			r = int(box['right'])
 			
 			cv2.rectangle(overlay,(l,t),(r,b),(0,255,0),-1)
+		
 
 
 		qty="QTY: "+qty
