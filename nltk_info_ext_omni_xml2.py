@@ -276,11 +276,9 @@ def process(inputString):
         #print tags
         if (clipedline.isdigit()):
             wordlabel.append(["Not a Product", clipedline])
-            #print wordlabel
             return wordlabel
 
         # first word is a number
-
         if postags[0][1] == "CD":
 
             if len(clipedline.replace(postags[0][0], '', 1).strip()) < 1:
@@ -288,16 +286,17 @@ def process(inputString):
                 return wordlabel
 
             wordlabel.append(["Quantity", postags[0][0]])
-            
-            wordlabel.append(["Item", clipedline.strip()])
+
+            item=clipedline.replace(postags[0][0],'')
+            wordlabel.append(["Item", item.strip()])
             
         # last word is quantity
         elif postags[len(postags) - 1][1] == "CD":
 
             wordlabel.append(["Quantity", postags[len(postags) - 1][0]])
-            wordlabel.append(
-                ["Item", clipedline.strip(postags[len(postags) - 1][0]).strip()])
-            #print wordlabel
+            item=clipedline.replace(postags[len(postags) - 1][0],'')
+            wordlabel.append(["Item", item.strip()])
+
 
         else:
             wordlabel.append([evaluateString(line.strip(), dictSubjects), line])
