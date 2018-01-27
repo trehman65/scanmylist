@@ -205,9 +205,7 @@ def process(inputString):
         if word.lower() in um:
             mytags.append(word)
 
-
     ## INSERT MORE TAGS HERE
-
     line = line.replace('watercolor', 'water color')
     line = line.replace(' w/o ', 'without')
     line = line.replace(' w/', 'with ')
@@ -232,11 +230,8 @@ def process(inputString):
     line = line.replace(' x ', ' by ')
     line = line.replace('No. ', 'No-')
 
-
-
     line = re.sub(r'(?<![0-9])[/](?![0-9])', ' or ', line)
     line = re.sub(r'(?<![0-9])[0](?![0-9])', '', line)
-
 
     if line == '':
         return wordlabel
@@ -245,7 +240,6 @@ def process(inputString):
     line = line.strip(string.punctuation)
     # strip spaces again from start and end
     line = line.strip()
-
 
     comment = line.split("(")[-1].split(")")[0]
     if comment != line:
@@ -372,8 +366,6 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
     thisitem["Tags"] = ""
 
 
-
-
     if type(out) is int:
         continue
 
@@ -385,7 +377,7 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         elif arr[0] != "Not a Product":
             thisitem[arr[0]] = arr[1].replace("\"", " ")
 
-#assigning quantity
+    #assigning quantity
     quant_check = 0
 
     if (len(thisitem["Item"]) != 0):
@@ -443,10 +435,6 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
 
         tags_wbb_list.append(tags_wbb)
 
-
-    
-
-
     res_line = {}
     res_line['input'] = line
 
@@ -463,7 +451,7 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
     else:
         res_line['Label'] = False
 
-        res_line['Product'] = ''  #thisitem['Item']
+        res_line['Product'] = '' 
         res_line['Quantity'] = ''
         res_line['ItemBoxes'] = ''
 
@@ -475,7 +463,5 @@ products["lines"] = productList
 nltkResult = {}
 nltkResult["ie_result"] = products
 
-# print productList
-# json.dump(productList,outfile)
 out_nltk_json = open(requestID + '_nltk.json', 'w')
 json.dump(nltkResult, out_nltk_json)
