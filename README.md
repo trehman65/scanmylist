@@ -1,0 +1,3 @@
+# scanmylist
+
+Stationary list parser
