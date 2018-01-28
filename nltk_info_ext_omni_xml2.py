@@ -170,7 +170,6 @@ def dict_check(inputString):
 
 
 def process(inputString):
-    #print "BHAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRRRRRRRRRRUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
 
     wordlabel = []
     comment = ""
@@ -182,9 +181,9 @@ def process(inputString):
     #orgline = line
     wordlabel.append(["Input", line])
     
-    um=['pkg','box','set','dozen','package','st','packs','pk','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles']
+    um=['rolls','sets','pkg','box','set','dozen','package','st','packs','pks','pkt','packet','pair','boxes','pkg.','packages','packages.','bx','ea','pk','gallon','canister','bottle','bottles','pack','pads','tray','ream','container','carton','tubes','bundle','pair','ct','containers','roll','rolls']
 
-
+    mytags=[]
     regex = r"\d+\""
     match = re.findall(regex, line)
     
@@ -197,18 +196,18 @@ def process(inputString):
         match = re.findall(regex, line)
         
     if len(match): 
-        wordlabel.append(["Dimensions", match[0]])
+        mytags.append(match[0])
+        #wordlabel.append(["Dimensions", match[0]])
 
     for word in line.split():
-        if word in webcolors.CSS3_NAMES_TO_HEX:
-            wordlabel.append(["Color", word])
+        if word.lower() in webcolors.CSS3_NAMES_TO_HEX:
+            mytags.append(word)
         if word.lower() in um:
-            wordlabel.append(["UM", word])
+            mytags.append(word)
 
 
+    ## INSERT MORE TAGS HERE
 
-
-    #print line
     line = line.replace('watercolor', 'water color')
     line = line.replace(' w/o ', 'without')
     line = line.replace(' w/', 'with ')
@@ -238,6 +237,7 @@ def process(inputString):
     line = re.sub(r'(?<![0-9])[/](?![0-9])', ' or ', line)
     line = re.sub(r'(?<![0-9])[0](?![0-9])', '', line)
 
+
     if line == '':
         return wordlabel
 
@@ -247,71 +247,70 @@ def process(inputString):
     line = line.strip()
 
 
-
-    #input = line
     comment = line.split("(")[-1].split(")")[0]
     if comment != line:
         line = line.replace(comment, "")
         line = line.strip(string.punctuation)
         wordlabel.append(["Comment", comment])
 
-    input = line
+    #remove tags from the item
+    print line
+    print mytags
+    for tag in mytags:
+        line=line.replace(tag,'')
+    print line
 
-
-
-    if len(line) < 1:
+    #removes bullets
+    clipedline = re.sub(r'([^\s\w])', ' ', line)
+    
+    if len(clipedline) < 1:
         return wordlabel
 
-    if (countVerbs(line) >= 2):
+    if (countVerbs(clipedline) >= 2):
         #print wordlabel
-        wordlabel.append(["Not a Product", line])
+        wordlabel.append(["Not a Product", clipedline])
         return wordlabel
     else:
-        input = re.sub(r'([^\s\w]|_)+', ' ', input)
-        line = re.sub(r'([^\s\w]|_)+', ' ', line)
-
-        if line.strip() == '' or input.strip() == '':
+    	
+        if clipedline.strip() == '':
             return ''
 
-        res_line = nltk.word_tokenize(input)
-        tags = nltk.pos_tag(res_line)
+        res_line = nltk.word_tokenize(clipedline)
+        postags = nltk.pos_tag(res_line)
         #print tags
-        if (input.isdigit()):
-            wordlabel.append(["Not a Product", line])
-            #print wordlabel
+        if (clipedline.isdigit()):
+            wordlabel.append(["Not a Product", clipedline])
             return wordlabel
 
         # first word is a number
+        if postags[0][1] == "CD":
 
-        if tags[0][0].isdigit():
-
-            if len(input.replace(tags[0][0], '', 1).strip()) < 1:
-                input = dict_check(line)
+            if len(clipedline.replace(postags[0][0], '', 1).strip()) < 1:
                 wordlabel.append(["Not a Product", line])
-                #print wordlabel
                 return wordlabel
 
-            wordlabel.append(["Quantity", tags[0][0]])
-            input = dict_check(input)
-            #print input
-            #wordlabel.append(["Item", input.replace(tags[0][0], '', 1).strip()])
-            wordlabel.append(["Item", input.strip()])
-            #print wordlabel
+            wordlabel.append(["Quantity", postags[0][0]])
+
+            clipedline = dict_check(clipedline)
+            item=clipedline.replace(postags[0][0],'')
+            wordlabel.append(["Item", item.strip()])
+            
         # last word is quantity
-        elif tags[len(tags) - 1][0].isdigit():
-            wordlabel.append(["Quantity", tags[len(tags) - 1][0]])
-            input = dict_check(input)
-            #print input
-            wordlabel.append(
-                ["Item", input.strip(tags[len(tags) - 1][0]).strip()])
-            #print wordlabel
+        elif postags[len(postags) - 1][1] == "CD":
+
+            wordlabel.append(["Quantity", postags[len(postags) - 1][0]])
+            clipedline = dict_check(clipedline)
+            item=clipedline.replace(postags[len(postags) - 1][0],'')
+            wordlabel.append(["Item", item.strip()])
+
 
         else:
+            clipedline = dict_check(clipedline)
+            wordlabel.append([evaluateString(clipedline.strip(), dictSubjects), clipedline])
+        
+        wordlabel.append(["tags",mytags])
 
-            line = dict_check(line)
-            #print line
-            wordlabel.append(
-                [evaluateString(line.strip(), dictSubjects), line])
+#        print wordlabel
 
     return wordlabel
 
@@ -364,35 +363,29 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         else:
             out = process(line)
 
-    #################### REMOVING SPECIAL CHARACTERS FROM THE PRODUCT QUERY ###############
-    # for ww in out:
-    #     #print ww
-    #     if ww[0] == 'Item':
-    #         #print ww
-    #         ww[1] = re.sub(r'[()0-9&#@!\/.,]+$', '', ww[1])
-    #         #print ww
-    #         #print
 
     thisitem = {}
     thisitem["Comment"] = ""
     thisitem["Label"] = "Not a Product"
     thisitem["Quantity"] = ""
     thisitem["Item"] = ""
-    thisitem["Color"] = ""
-    thisitem["UM"] = ""
-    thisitem["Dimensions"] = ""
+    thisitem["Tags"] = ""
+
 
 
 
     if type(out) is int:
         continue
 
-    # print "New Sentence"
     for arr in out:
-        # print arr
-        if arr[0] != "Not a Product":
+        
+        if arr[0]=='tags':
+            thisitem['Tags'] = arr[1];
+
+        elif arr[0] != "Not a Product":
             thisitem[arr[0]] = arr[1].replace("\"", " ")
 
+#assigning quantity
     quant_check = 0
 
     if (len(thisitem["Item"]) != 0):
@@ -418,13 +411,10 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
             thisitem['Item'] = thisitem['Item'].rstrip(str(pos_tags[-1][0]))
 
     #################################################
+    
     word_wbb_list = []
     x = ''
-
-    thisitem['Item']=thisitem['Item'].replace(thisitem['UM'],'')
-    thisitem['Item']=thisitem['Item'].replace(thisitem['Color'],'')
-
-
+    
     for item in thisitem['Item'].split():
         word_wbb = {}
         word_wbb['word'] = item
@@ -436,31 +426,45 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
                 break
 
         word_wbb_list.append(word_wbb)
+    
+    tags_wbb_list = []
+    x = ''
+    
+    for tag in thisitem['Tags']:
+        tags_wbb = {}
+        tags_wbb['tag'] = tag
+
+        for k in word_wbb_dict.keys():
+            if tag in k:
+                x = x + tag + " "
+                tags_wbb['tag_bounding_box'] = word_wbb_dict.get(k)
+                break
+
+        tags_wbb_list.append(tags_wbb)
+    
+
+
+
 
     res_line = {}
     res_line['input'] = line
 
     if thisitem['Label'].strip() == "Product" and x != '':
         
-        res_line['label'] = True
-        #line = re.sub(r'^[0-9]$', '', res_line['product'])
-
-        res_line['product'] = x.strip()  #thisitem['Item']
-        res_line['quantity'] = thisitem['Quantity']
-        res_line['words'] = word_wbb_list
-        res_line['comment'] = thisitem['Comment']
-        res_line['color'] = thisitem['Color']
-        res_line['um'] = thisitem['UM']
-        res_line['dimensions'] = thisitem['Dimensions']
-
-
+        res_line['Label'] = True
+        res_line['Product'] = thisitem['Item']
+        res_line['Quantity'] = thisitem['Quantity']
+        res_line['ItemBoxes'] = word_wbb_list
+        res_line['TagsBoxes'] = tags_wbb_list
+        res_line['Comment'] = thisitem['Comment']
+        res_line['Tags'] = thisitem['Tags']
 
     else:
-        res_line['label'] = False
+        res_line['Label'] = False
 
-        res_line['product'] = ''  #thisitem['Item']
-        res_line['quantity'] = ''
-        res_line['words'] = ''
+        res_line['Product'] = ''  #thisitem['Item']
+        res_line['Quantity'] = ''
+        res_line['Words'] = ''
 
     productList.append(res_line)
     #break

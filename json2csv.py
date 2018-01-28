@@ -9,10 +9,17 @@ for filename in os.listdir('nltk-out'):
     with open('csv-out/'+filename+'.csv', 'w') as f:
         wrt = csv.writer(f)
         for item in data['ie_result']['lines']:
-            try:
-                if item['product'] != '':
-                    wrt.writerow([item['input'], item['product'], item['quantity']])
-                else:
-                    wrt.writerow([item['input']])
-            except:
-                pass
+
+            if item['product'] != '':
+                
+                tags=""
+                
+                if len(item['tags']) != 0:
+                    for tag in item['tags']:
+                        tags = tags+tag+','
+                    tags=tags.rstrip(',')
+    
+                wrt.writerow([item['input'].encode('utf-8'), item['product'].encode('utf-8'), item['quantity'].encode('utf-8'),tags])
+            else:
+                wrt.writerow([item['input'].encode('utf-8')])
+    

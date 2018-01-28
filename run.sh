@@ -20,7 +20,7 @@ echo ----------------------------------------------------------------
 #06451143-8863-4909-84c3-189451252f00
 
 # OMNI call to do pre-processing and OCR
-time curl -X POST http://52.14.7.109:3000/apis3/omnibb -F uuid=$1 -F imagedata=@$2 -o $1_out_ocrlines_word_wbb.json
+ time curl -X POST http://52.14.7.109:3000/apis3/omnibb -F uuid=$1 -F imagedata=@$2 -o $1_out_ocrlines_word_wbb.json
 
 
 echo ----------------------------------------------------------------
