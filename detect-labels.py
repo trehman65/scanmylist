@@ -2,7 +2,7 @@ from google.cloud import vision
 from google.cloud import credentials
 import io
 from google.cloud.vision import types
-
+import sys
 
 def detect_labels(path):
     """Detects labels in the file."""
@@ -15,10 +15,10 @@ def detect_labels(path):
 
     response = client.label_detection(image=image)
     labels = response.label_annotations
-    print('Labels:')
+    print('Labels Score')
 
     for label in labels:
-        print(label.description)
+        print label.description +" "+str(label.score)
 
 
-detect_labels('/Users/talha/Desktop/t2.jpg')
+detect_labels(sys.argv[1])
