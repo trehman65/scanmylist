@@ -30,14 +30,14 @@ with open(inputJson) as data_file:
 lines=data['ie_result']['lines']
 
 for line in lines:
+
 	if line['Label']== 1:
 		qty = line['Quantity']
 
-		words = line['TagsBoxes']
-
-
-		for word in words:
-			box = word['tag_bounding_box']
+		tags = line['TagsBoxes']
+		# print line['product']
+		for tag in tags:
+			box = tag['tag_bounding_box']
 
 			# t = int(box['top'])*300/1440
 			# l = int(box['left'])*300/1440
@@ -51,7 +51,7 @@ for line in lines:
 			
 			cv2.rectangle(overlay,(l,t),(r,b),(255,0,0),-1)
 
-
+		
 		words = line['ItemBoxes']
 		# print line['product']
 		for word in words:

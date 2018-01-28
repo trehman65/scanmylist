@@ -117,7 +117,7 @@ def dict_check(inputString):
         'January', 'February', 'March', 'April', 'May', 'June', 'July',
         'August', 'September', 'October', 'November', 'December', 'Elementary', 'Lists', 'List',
         'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth', 'Eleventh', 'Tweleveth',
-		'1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'
+        '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'
     ]
     for exclude in exclude_list:
         d.remove(exclude)
@@ -207,7 +207,6 @@ def process(inputString):
 
 
     ## INSERT MORE TAGS HERE
-
     line = line.replace('watercolor', 'water color')
     line = line.replace(' w/o ', 'without')
     line = line.replace(' w/', 'with ')
@@ -232,11 +231,8 @@ def process(inputString):
     line = line.replace(' x ', ' by ')
     line = line.replace('No. ', 'No-')
 
-
-
     line = re.sub(r'(?<![0-9])[/](?![0-9])', ' or ', line)
     line = re.sub(r'(?<![0-9])[0](?![0-9])', '', line)
-
 
     if line == '':
         return wordlabel
@@ -245,7 +241,6 @@ def process(inputString):
     line = line.strip(string.punctuation)
     # strip spaces again from start and end
     line = line.strip()
-
 
     comment = line.split("(")[-1].split(")")[0]
     if comment != line:
@@ -271,7 +266,7 @@ def process(inputString):
         wordlabel.append(["Not a Product", clipedline])
         return wordlabel
     else:
-    	
+        
         if clipedline.strip() == '':
             return ''
 
@@ -372,8 +367,6 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
     thisitem["Tags"] = ""
 
 
-
-
     if type(out) is int:
         continue
 
@@ -385,7 +378,7 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         elif arr[0] != "Not a Product":
             thisitem[arr[0]] = arr[1].replace("\"", " ")
 
-#assigning quantity
+
     quant_check = 0
 
     if (len(thisitem["Item"]) != 0):
@@ -410,11 +403,12 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
         if pos_tags[-1][1] == 'IN' or pos_tags[-1][1] == 'CC':
             thisitem['Item'] = thisitem['Item'].rstrip(str(pos_tags[-1][0]))
 
-    #################################################
     
     word_wbb_list = []
     x = ''
     
+    #find boxes for items
+
     for item in thisitem['Item'].split():
         word_wbb = {}
         word_wbb['word'] = item
@@ -426,9 +420,11 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
                 break
 
         word_wbb_list.append(word_wbb)
-    
+
+
+    # find boxes for tags
     tags_wbb_list = []
-    x = ''
+    y = ''
     
     for tag in thisitem['Tags']:
         tags_wbb = {}
@@ -436,14 +432,11 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
 
         for k in word_wbb_dict.keys():
             if tag in k:
-                x = x + tag + " "
+                y = y + tag + " "
                 tags_wbb['tag_bounding_box'] = word_wbb_dict.get(k)
                 break
 
         tags_wbb_list.append(tags_wbb)
-    
-
-
 
 
     res_line = {}
@@ -461,10 +454,9 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
 
     else:
         res_line['Label'] = False
-
-        res_line['Product'] = ''  #thisitem['Item']
+        res_line['Product'] = '' 
         res_line['Quantity'] = ''
-        res_line['Words'] = ''
+        res_line['ItemBoxes'] = ''
 
     productList.append(res_line)
     #break
@@ -474,7 +466,5 @@ products["lines"] = productList
 nltkResult = {}
 nltkResult["ie_result"] = products
 
-# print productList
-# json.dump(productList,outfile)
 out_nltk_json = open(requestID + '_nltk.json', 'w')
 json.dump(nltkResult, out_nltk_json)
