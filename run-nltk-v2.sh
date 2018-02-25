@@ -17,7 +17,7 @@ echo Input: $1_out_ocrlines_word_wbb.json , dictSubjects.txt , my_pwl.txt
 echo ----------------------------------------------------------------
 
 
-python nltk_info_ext_omni_xml2.py $1 # $1_ocr_lines.txt
+python nltk_info_ext_omni_xml2.py $1 $3 # $1_ocr_lines.txt
 
 echo ----------------------------------------------------------------
 echo Output: $1_nltk.json
@@ -32,5 +32,4 @@ echo Highlighting Products
 echo ================================================================
 echo
 
-
-python plotRect.py $2
+python plotRect.py $2 $3

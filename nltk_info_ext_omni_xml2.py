@@ -310,10 +310,9 @@ def process(inputString):
     return wordlabel
 
 
-abspath = os.getcwd()
+abspath = sys.argv[2]
 
 dictSubjects = set()
-#with open("/opt/nltk_visionx/nltk/dictSubjects.txt") as f:
 with open("dictSubjects.txt") as f:
     content = f.readlines()
     for line in content:
@@ -326,7 +325,7 @@ requestID = sys.argv[1]
 
 ocrlines_word_dict = {}
 #with open('/opt/nltk_visionx/nltk/'+requestID + '_out_ocrlines_word_wbb.json') as data_file:
-with open(requestID + '_out_ocrlines_word_wbb.json') as data_file:
+with open(abspath+requestID + '_out_ocrlines_word_wbb.json') as data_file:
     ocrlines_word_dict = json.load(data_file)
 
 #print word_wbb_dict.keys()
@@ -466,5 +465,5 @@ products["lines"] = productList
 nltkResult = {}
 nltkResult["ie_result"] = products
 
-out_nltk_json = open(requestID + '_nltk.json', 'w')
+out_nltk_json = open(abspath+requestID + '_nltk.json', 'w')
 json.dump(nltkResult, out_nltk_json)

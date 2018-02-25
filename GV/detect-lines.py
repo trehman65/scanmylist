@@ -68,8 +68,9 @@ def detect_documentT(path, target):
                         listDetections.append((tl,br,wordString))
                         wordString = wordString.replace("\"", "")
                         
+                        #to output word boxes in file
                         # target.write(str(tl.x) + "," + str(tl.y) + "," + str(br.x) + "," + str(br.y) + "," + wordString.encode("utf-8")+"\n")
-                        cv2.rectangle(imageOpenCV,(tl.x, tl.y), (br.x, br.y), (0, 0, 255), 4)
+                        #cv2.rectangle(imageOpenCV,(tl.x, tl.y), (br.x, br.y), (0, 0, 255), 4)
                         
 
     print "Done with " + str(path)
@@ -112,7 +113,9 @@ def detect_documentT(path, target):
 
 
 
-relevant_path='/Users/talha/Downloads/VisionxNLTK-v2.0/GV/data/'
+# relevant_path='/Users/talha/Downloads/VisionxNLTK-v2.0/GV/data/'
+relevant_path='/Users/talha/Downloads/VisionxNLTK-v2.0/TestData/'
+
 included_extensions = ['jpg', 'JPG']
 file_names = [fn for fn in os.listdir(relevant_path)
               if any(fn.endswith(ext) for ext in included_extensions)]
