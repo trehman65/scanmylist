@@ -2,24 +2,30 @@ import json
 import csv
 import os
 
-for filename in os.listdir('nltk-out'):
+files = [f for f in os.listdir('TestData') if f.endswith('_nltk.json')]
+
+for filename in files:
+    
     print(filename)
-    with open('nltk-out/'+filename, 'r') as f:
+    jsonfilename=filename.replace('.json','')
+
+    with open('TestData/'+filename, 'r') as f:
         data = json.load(f)
-    with open('csv-out/'+filename+'.csv', 'w') as f:
-        wrt = csv.writer(f)
+    with open('TestData/'+jsonfilename+'.csv', 'w') as f:
+    	wrt = csv.writer(f)
+    	wrt.writerow(["Input","Product","Quantity","Tags"])
+        
         for item in data['ie_result']['lines']:
 
-            if item['product'] != '':
+            if item['Product'] != '':
                 
                 tags=""
                 
-                if len(item['tags']) != 0:
-                    for tag in item['tags']:
+                if len(item['Tags']) != 0:
+                    for tag in item['Tags']:
                         tags = tags+tag+','
                     tags=tags.rstrip(',')
     
-                wrt.writerow([item['input'].encode('utf-8'), item['product'].encode('utf-8'), item['quantity'].encode('utf-8'),tags])
+                wrt.writerow([item['input'].encode('utf-8'), item['Product'].encode('utf-8'), item['Quantity'].encode('utf-8'),tags])
             else:
                 wrt.writerow([item['input'].encode('utf-8')])
-    
