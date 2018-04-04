@@ -1,0 +1,26 @@
+Input,Product,Quantity,Tags
+147215
+INVOICE DOCUMENTATION REQUIREMENTS,INVOICE DOCUMENTATION REQUIREMENTS,Multiple,
+1. Exact NAME AND,Exact NAME AND,1,
+ADDRESS OF PURCHASER,ADDRESS PURCHASER,1,
+listed above,listed ,1,
+2. Address Where,Address Where,2,
+Goods/Services were,Goods Services were,Multiple,
+Delivered,Delivered,1,
+3. Full Supplier Name and,Full Supplier Name ,3,
+Address,Address,1,
+4. Purchase Order Number,Purchase Order Number,4,
+5. Requestor Name,Name,5,
+"6. Invoice Number, Date, and",Invoice Number Date ,6,
+Payment Terms,Payment Terms,Multiple,
+Terms and Conditions,Terms and Conditions,Multiple,
+This Purchase Order may be
+accepted only on the precise,accepted only the precise,1,
+terms in the Purchase Order
+Terms & Conditions (a copy,Terms Conditions,Multiple,
+of which is attached hereto or,which attached hereto,1,
+may be obtained by
+contacting the purchaser)
+USD 213.51,213,51,
+Purchase,Purchase,1,
+Order Total,Order Total,1,

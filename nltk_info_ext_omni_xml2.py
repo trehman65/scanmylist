@@ -25,6 +25,12 @@ import json
 from enchant.tokenize import get_tokenizer, EmailFilter, URLFilter, WikiWordFilter
 
 from omnixmlconverter import OmniXmlToJsonConverter
+import argparse
+import io
+import sys
+
+from google.cloud import vision
+
 
 import webcolors
 
@@ -310,7 +316,6 @@ def process(inputString):
     return wordlabel
 
 
-abspath = sys.argv[2]
 
 dictSubjects = set()
 with open("dictSubjects.txt") as f:
@@ -321,42 +326,38 @@ with open("dictSubjects.txt") as f:
             continue
         dictSubjects.add(line.replace("\n", ""))
 
-requestID = sys.argv[1]
-
-ocrlines_word_dict = {}
-#with open('/opt/nltk_visionx/nltk/'+requestID + '_out_ocrlines_word_wbb.json') as data_file:
-with open(abspath+requestID + '_out_ocrlines_word_wbb.json') as data_file:
-    ocrlines_word_dict = json.load(data_file)
-
-#print word_wbb_dict.keys()
-
+abspath=sys.argv[3]
+requestID=sys.argv[2]
+filename= sys.argv[1]
 out = 0
 productList = []
 
 line_counter = 0
 
-for sentence in ocrlines_word_dict["result"]["sentences"]:
-    #####################################
-    word_wbb_dict = {}
-    for word in sentence['words']:
-        word_wbb_dict[word['word']] = word['boundingBox']
-    # print word_wbb_dict
+"""Detects text in the file."""
+client = vision.ImageAnnotatorClient()
 
-    ##########################################
-    line = sentence["sentence"].strip()
-    # line = unicode(line, "utf-8")
+path=abspath+filename
 
-    line_counter += 1
-    if len(line) > 3:
-        if line.find("     "):
-            parts = line.split("     ")
-            for part in parts:
+# [START migration_text_detection]
+with io.open(path, 'rb') as image_file:
+    content = image_file.read()
 
-                if len(part) > 1:
-                    out = process(part.strip())
-        else:
-            out = process(line)
+image = vision.types.Image(content=content)
 
+response = client.text_detection(image=image)
+texts = response.text_annotations
+
+for text in texts:
+    ocr_output='\n"{}"'.format(text.description.encode('utf-8'))
+    break
+
+
+lines = ocr_output.split('\n')
+
+for line in lines:
+
+    out = process(line)
 
     thisitem = {}
     thisitem["Comment"] = ""
@@ -403,51 +404,14 @@ for sentence in ocrlines_word_dict["result"]["sentences"]:
             thisitem['Item'] = thisitem['Item'].rstrip(str(pos_tags[-1][0]))
 
     
-    word_wbb_list = []
-    x = ''
-    
-    #find boxes for items
-
-    for item in thisitem['Item'].split():
-        word_wbb = {}
-        word_wbb['word'] = item
-
-        for k in word_wbb_dict.keys():
-            if item in k:
-                x = x + item + " "
-                word_wbb['word_bounding_box'] = word_wbb_dict.get(k)
-                break
-
-        word_wbb_list.append(word_wbb)
-
-
-    # find boxes for tags
-    tags_wbb_list = []
-    y = ''
-    
-    for tag in thisitem['Tags']:
-        tags_wbb = {}
-        tags_wbb['tag'] = tag
-
-        for k in word_wbb_dict.keys():
-            if tag in k:
-                y = y + tag + " "
-                tags_wbb['tag_bounding_box'] = word_wbb_dict.get(k)
-                break
-
-        tags_wbb_list.append(tags_wbb)
-
-
     res_line = {}
     res_line['input'] = line
 
-    if thisitem['Label'].strip() == "Product" and x != '':
+    if thisitem['Label'].strip() == "Product":
         
         res_line['Label'] = True
         res_line['Product'] = thisitem['Item']
         res_line['Quantity'] = thisitem['Quantity']
-        res_line['ItemBoxes'] = word_wbb_list
-        res_line['TagsBoxes'] = tags_wbb_list
         res_line['Comment'] = thisitem['Comment']
         res_line['Tags'] = thisitem['Tags']
 

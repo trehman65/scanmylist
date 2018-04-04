@@ -6,8 +6,14 @@ dir ="/Users/talha/Downloads/VisionxNLTK-v2.0/TestData/"
 files = [f for f in os.listdir(dir) if f.endswith('.jpg')]
 
 for file in files:
-	print "Running "+file
+
 	filename=file.split('.')[0]
-	command = "bash run-nltk-v2.sh "+filename+ " "+file+" "+dir
+
+	if os.path.isfile(dir+filename+"_nltk.json")==1:
+		print "Image skipped because its already processed"
+		continue
+
+	print "Running "+file
+	command = "python nltk_info_ext_omni_xml2.py "+file+ " "+filename+" "+dir
 	os.system(command)
 

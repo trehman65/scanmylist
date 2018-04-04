@@ -126,8 +126,8 @@ for filename in file_names:
     print "Processing " + str(count) +" "+filename 
     finalInput = relevant_path + '/' + filename
     filename = filename.replace(".jpg", "")
-    finalOutput = relevant_path + '/outputs/' + filename + ".csv"
-    finalOutputImage = relevant_path + '/images/' + filename + ".jpeg"
+    finalOutput = relevant_path + 'outputs/' + filename + ".csv"
+    finalOutputImage = relevant_path + 'images/' + filename + ".jpeg"
     if os.path.isfile(finalOutput)==0:
         target = open(finalOutput, 'w')
         detect_documentT(finalInput, target)

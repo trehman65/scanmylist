@@ -1,0 +1,21 @@
+Input,Product,Quantity,Tags
+No SIM f 6:43 PM i •,SIM,1,
+Let's chat (JavaQA)
+"at To get started, I am going to"
+need your order number and
+:rp
+Can I please have your order
+number'?,number,1,
+l 9759217249
+41 Great I have your order,Great have your order,41,
+number as 9/5921/249.,number 5921,249,
+Is that correct?
+Yes
+® Can I please have your
+delivery : rp code?,delivery code,1,
+l Cancel,Cancel,1,
+41 Great I have your order,Great have your order,41,
+number as 9/5921 /249 and,number 5921 249 ,1,
+.1p code 05 Cancel,code Cancel,1p,
+Just a second :;bile I lookup
+your order,your order,1,

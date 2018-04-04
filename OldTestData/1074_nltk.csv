@@ -1,0 +1,27 @@
+Input,Product,Quantity,Tags
+School Supplies Checklist 4.,Checklist,4,
+_ Backpack,Backpack,1,
+— lunch box,lunch,1,box
+- Pencils,Pencils,Multiple,
+- Pencil Box,Pencil,1,Box
+- Pens,Pens,Multiple,
+- Notebook,Notebook,1,
+_ Glue Sticks,Glue Sticks,Multiple,
+— Colored Pencils,Colored Pencils,Multiple,
+- Markers,Markers,Multiple,
+- Pencil Sharpener,Pencil Sharpener,1,
+— Erasers,Erasers,Multiple,
+— Scissors,Scissors,Multiple,
+- Pocket Folders,Pocket Folders,Multiple,
+- Highlighters,Highlighters,Multiple,
+- Binders,Binders,Multiple,
+_ Stapler,Stapler,1,
+- Ruler,Ruler,1,
+— Calculator,Calculator,1,
+— Loose leaf Notebook paper,Loose leaf Notebook paper,1,
+- Tape,Tape,1,
+- Crayons,Crayons,Multiple,
+- Drawing Paper
+_ Planner/ Agenda,Planner Agenda,1,
+— Note Cards,Note Cards,Multiple,
+li
