@@ -326,9 +326,18 @@ with open("dictSubjects.txt") as f:
             continue
         dictSubjects.add(line.replace("\n", ""))
 
-abspath=sys.argv[3]
-requestID=sys.argv[2]
-filename= sys.argv[1]
+# abspath=sys.argv[3]
+# requestID=sys.argv[2]
+# filename= sys.argv[1]
+
+imagepath=sys.argv[1]
+
+filename=imagepath.split('/')[-1]
+requestID=filename.split('.')[0]
+abspath=imagepath.replace(filename,'')
+
+
+
 out = 0
 productList = []
 

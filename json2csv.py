@@ -13,7 +13,7 @@ for filename in files:
         data = json.load(f)
     with open('TestData/'+jsonfilename+'.csv', 'w') as f:
     	wrt = csv.writer(f)
-    	wrt.writerow(["Input","Product","Quantity","Tags"])
+    	wrt.writerow(["Input","Product","Quantity","Tags","Comment"])
         
         for item in data['ie_result']['lines']:
 
@@ -26,6 +26,6 @@ for filename in files:
                         tags = tags+tag+','
                     tags=tags.rstrip(',')
     
-                wrt.writerow([item['input'].encode('utf-8'), item['Product'].encode('utf-8'), item['Quantity'].encode('utf-8'),tags])
+                wrt.writerow([item['input'].encode('utf-8'), item['Product'].encode('utf-8'), item['Quantity'].encode('utf-8'),tags,item['Comment'].encode('utf-8')])
             else:
                 wrt.writerow([item['input'].encode('utf-8')])
