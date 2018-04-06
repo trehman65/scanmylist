@@ -14,6 +14,6 @@ for file in files:
 		continue
 
 	print "Running "+file
-	command = "python nltk_info_ext_omni_xml2.py "+file+ " "+filename+" "+dir
+	command = "python nltk_info_ext_gv.py "+file+ " "+filename+" "+dir
 	os.system(command)
 
