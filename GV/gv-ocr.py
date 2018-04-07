@@ -31,15 +31,14 @@ def detect_text(path):
 
     count=0
     for text in texts:
-        ocr_output='\n"{}"'.format(text.description.encode('utf-8'))
-        
         if count==0:
+            ocr_output='\n"{}"'.format(text.description.encode('utf-8'))
             count=count+1
             continue
         else:
             thisworddata={}
 
-            word='\n"{}"'.format(text.description.encode('utf-8'))
+            word='"{}"'.format(text.description.encode('utf-8'))
             vertices = (['({},{})'.format(vertex.x, vertex.y)
                     for vertex in text.bounding_poly.vertices])
             box={"top":'',"left":'',"bottom":'',"right":'',}
@@ -67,6 +66,7 @@ def detect_text(path):
     lines = ocr_output.split('\n')
     index=0
     for line in lines:
+        print line
         thisline={}
         thisline["sentenceID"]=index
         thisline["sentence"]=line
@@ -77,7 +77,17 @@ def detect_text(path):
             thisword={}
             thisword["word"]=word
 
-            thisword["boundingbox"]={"top":'',"left":'',"bottom":'',"right":'',}
+            # thisword["boundingbox"]={"top":'',"left":'',"bottom":'',"right":'',}
+            thisword["boundingbox"]=[]
+            ## assign boxes to words by comparison
+
+            for wordinfo in worddata["words"]:
+                if wordinfo["visited"]==0 and wordinfo["word"].replace("\"",'')==word:
+                    thisword["boundingbox"]=wordinfo["boundingbox"]
+                    print "Matched"
+                    wordinfo["visited"]=1
+                    break
+
             thisline["words"].append(thisword)
 
 
