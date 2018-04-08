@@ -28,7 +28,7 @@ from omnixmlconverter import OmniXmlToJsonConverter
 import argparse
 import io
 import sys
-
+from gvocr import detect_text
 from google.cloud import vision
 
 
@@ -254,12 +254,9 @@ def process(inputString):
         line = line.strip(string.punctuation)
         wordlabel.append(["Comment", comment])
 
-    #remove tags from the item
-    print line
-    print mytags
     for tag in mytags:
         line=line.replace(tag,'')
-    print line
+    # print line
 
     #removes bullets
     clipedline = re.sub(r'([^\s\w])', ' ', line)
@@ -326,10 +323,6 @@ with open("dictSubjects.txt") as f:
             continue
         dictSubjects.add(line.replace("\n", ""))
 
-# abspath=sys.argv[3]
-# requestID=sys.argv[2]
-# filename= sys.argv[1]
-
 imagepath=sys.argv[1]
 
 filename=imagepath.split('/')[-1]
@@ -340,33 +333,36 @@ abspath=imagepath.replace(filename,'')
 
 out = 0
 productList = []
-
 line_counter = 0
 
 """Detects text in the file."""
-client = vision.ImageAnnotatorClient()
 
-path=abspath+filename
-
-# [START migration_text_detection]
-with io.open(path, 'rb') as image_file:
-    content = image_file.read()
-
-image = vision.types.Image(content=content)
-
-response = client.text_detection(image=image)
-texts = response.text_annotations
-
-for text in texts:
-    ocr_output='\n"{}"'.format(text.description.encode('utf-8'))
-    break
+ocr_output=detect_text(imagepath)
 
 
-lines = ocr_output.split('\n')
 
-for line in lines:
+for sentence in ocr_output["sentences"]:
 
-    out = process(line)
+    word_wbb_dict = {}
+    
+    for word in sentence["words"]:
+        word_wbb_dict[word['word']] = word['boundingbox']
+   
+    line = sentence["sentence"].strip()
+
+    print line
+
+    line_counter += 1
+    if len(line) > 3:
+        if line.find("     "):
+            parts = line.split("     ")
+            for part in parts:
+                if len(part) > 1:
+                    out = process(part.strip())
+        else:
+            out = process(line)
+
+
 
     thisitem = {}
     thisitem["Comment"] = ""
@@ -412,23 +408,61 @@ for line in lines:
         if pos_tags[-1][1] == 'IN' or pos_tags[-1][1] == 'CC':
             thisitem['Item'] = thisitem['Item'].rstrip(str(pos_tags[-1][0]))
 
+
+    word_wbb_list = []
+    x = ''
+    
+    #find boxes for items
+
+    for item in thisitem['Item'].split():
+        word_wbb = {}
+        word_wbb['word'] = item
+
+        for k in word_wbb_dict.keys():
+            if item in k:
+                x = x + item + " "
+                word_wbb['word_bounding_box'] = word_wbb_dict.get(k)
+                break
+
+        word_wbb_list.append(word_wbb)
+
+    # find boxes for tags
+    tags_wbb_list = []
+    y = ''
+    
+    for tag in thisitem['Tags']:
+        tags_wbb = {}
+        tags_wbb['tag'] = tag
+
+        for k in word_wbb_dict.keys():
+            if tag in k:
+                y = y + tag + " "
+                tags_wbb['tag_bounding_box'] = word_wbb_dict.get(k)
+                break
+
+        tags_wbb_list.append(tags_wbb)
+
+
     
     res_line = {}
     res_line['input'] = line
 
-    if thisitem['Label'].strip() == "Product":
+    if thisitem['Label'].strip() == "Product" and x != '':
         
         res_line['Label'] = True
         res_line['Product'] = thisitem['Item']
         res_line['Quantity'] = thisitem['Quantity']
         res_line['Comment'] = thisitem['Comment']
         res_line['Tags'] = thisitem['Tags']
+        res_line['ItemBoxes'] = word_wbb_list
+        res_line['TagsBoxes'] = tags_wbb_list
 
     else:
         res_line['Label'] = False
         res_line['Product'] = '' 
         res_line['Quantity'] = ''
         res_line['ItemBoxes'] = ''
+        res_line['TagsBoxes'] = ''
 
     productList.append(res_line)
     #break
