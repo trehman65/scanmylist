@@ -4,12 +4,14 @@ import argparse
 import io
 import sys
 import json
+import random
 import cv2
 
 
 from google.cloud import vision
 
 def detect_text(path):
+
     """Detects text in the file."""
     client = vision.ImageAnnotatorClient()
 
@@ -61,7 +63,7 @@ def detect_text(path):
     
     # cv2.imwrite('/Users/talha/Downloads/VisionxNLTK-v2.0/GV/box.png',imageOpenCV)
     
-    json.dump(worddata, open('words.json', 'wb'))
+    # json.dump(worddata, open('words.json', 'wb'))
 
     lines = ocr_output.split('\n')
     index=0
@@ -72,20 +74,25 @@ def detect_text(path):
         thisline["sentence"]=line
         thisline["words"]=[]
         words=line.split(' ')
+
+        r=random.randint(1,255)
+        g=random.randint(1,255)
+        b=random.randint(1,255)
         
         for word in words:
             thisword={}
             thisword["word"]=word
-
-            # thisword["boundingbox"]={"top":'',"left":'',"bottom":'',"right":'',}
             thisword["boundingbox"]=[]
             ## assign boxes to words by comparison
 
             for wordinfo in worddata["words"]:
                 if wordinfo["visited"]==0 and wordinfo["word"].replace("\"",'')==word:
                     thisword["boundingbox"]=wordinfo["boundingbox"]
-                    print "Matched"
+                    # box=wordinfo["boundingbox"]
+                    # print "Matched"
                     wordinfo["visited"]=1
+                    # cv2.rectangle(imageOpenCV,(int(box["left"]), int(box["top"])), (int(box["right"]), int(box["bottom"])), (r, g, b), 4)
+
                     break
 
             thisline["words"].append(thisword)
@@ -95,6 +102,7 @@ def detect_text(path):
         index=index+1
     
     json.dump(data, open('ocr.json', 'wb'))
+    # cv2.imwrite('/Users/talha/Downloads/VisionxNLTK-v2.0/GV/box.png',imageOpenCV)
 
 
 detect_text(sys.argv[1])
