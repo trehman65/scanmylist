@@ -12,6 +12,10 @@ from google.cloud import vision
 
 def detect_text(path):
 
+    filename=path.split('/')[-1]
+    requestID=filename.split('.')[0]
+    abspath=path.replace(filename,'')
+    
     """Detects text in the file."""
     client = vision.ImageAnnotatorClient()
 
@@ -101,7 +105,7 @@ def detect_text(path):
         data["sentences"].append(thisline)
         index=index+1
     
-    json.dump(data, open('ocr.json', 'wb'))
+    json.dump(data, open(requestID+'.gvocr.json', 'wb'))
     # cv2.imwrite('/Users/talha/Downloads/VisionxNLTK-v2.0/GV/box.png',imageOpenCV)
 
 
