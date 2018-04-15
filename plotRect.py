@@ -7,15 +7,16 @@ import os
 
 
 
-inputImage = sys.argv[1]
+abspath=sys.argv[2]
 
+inputImage = sys.argv[1]
 filename=inputImage.split('.')[0]
 
-inputJson = filename+"_nltk.json"
-outputImage = filename+".out.png"
+inputJson = abspath+filename+"_nltk.json"
+outputImage = abspath+filename+".out.png"
 
 
-
+inputImage = abspath+inputImage
 img = cv2.imread(inputImage,cv2.IMREAD_COLOR)
 
 overlay = img.copy()
