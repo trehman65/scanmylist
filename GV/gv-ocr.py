@@ -1,5 +1,3 @@
-
-
 import argparse
 import io
 import sys
@@ -31,22 +29,26 @@ def detect_text(path):
     imageOpenCV = cv2.imread(path)
 
     data={}
+    ocr_output=""
     data["sentences"]=[]
     worddata={}
     worddata["words"]=[]
 
     count=0
     for text in texts:
+
         if count==0:
             ocr_output='\n"{}"'.format(text.description.encode('utf-8'))
             count=count+1
             continue
         else:
             thisworddata={}
-
+            
             word='"{}"'.format(text.description.encode('utf-8'))
             vertices = (['({},{})'.format(vertex.x, vertex.y)
                     for vertex in text.bounding_poly.vertices])
+            print word,vertices
+
             box={"top":'',"left":'',"bottom":'',"right":'',}
             lefttop= min(vertices)
             rightbottom= max(vertices)
@@ -66,12 +68,17 @@ def detect_text(path):
         count=count+1
     
     # cv2.imwrite('/Users/talha/Downloads/VisionxNLTK-v2.0/GV/box.png',imageOpenCV)
-    
     # json.dump(worddata, open('words.json', 'wb'))
 
+    ocr_output=ocr_output.replace('\"','')
     lines = ocr_output.split('\n')
     index=0
+
     for line in lines:
+        
+        if len(line)==0:
+            continue
+
         print line
         thisline={}
         thisline["sentenceID"]=index
@@ -84,6 +91,7 @@ def detect_text(path):
         b=random.randint(1,255)
         
         for word in words:
+            word=word.replace("\"",'');
             thisword={}
             thisword["word"]=word
             thisword["boundingbox"]=[]
@@ -105,7 +113,7 @@ def detect_text(path):
         data["sentences"].append(thisline)
         index=index+1
     
-    json.dump(data, open(requestID+'.gvocr.json', 'wb'))
+    json.dump(data, open(abspath+requestID+'.gvocr.json', 'wb'))
     # cv2.imwrite('/Users/talha/Downloads/VisionxNLTK-v2.0/GV/box.png',imageOpenCV)
 
 

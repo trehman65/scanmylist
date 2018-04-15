@@ -24,11 +24,11 @@ import enchant.checker
 import json
 from enchant.tokenize import get_tokenizer, EmailFilter, URLFilter, WikiWordFilter
 
-from omnixmlconverter import OmniXmlToJsonConverter
 import argparse
 import io
 import sys
 from gvocr import detect_text
+from plotrect import highlightproducts
 from google.cloud import vision
 
 
@@ -313,8 +313,8 @@ def process(inputString):
     return wordlabel
 
 
-
 dictSubjects = set()
+
 with open("dictSubjects.txt") as f:
     content = f.readlines()
     for line in content:
@@ -330,19 +330,18 @@ requestID=filename.split('.')[0]
 abspath=imagepath.replace(filename,'')
 
 
-
 out = 0
 productList = []
 line_counter = 0
 
 """Detects text in the file."""
 
-ocr_output=detect_text(imagepath)
+print "Running Text Recognition"
+ocr_output_text=detect_text(imagepath)
 
+print "Detecting Products"
 
-
-for sentence in ocr_output["sentences"]:
-
+for sentence in ocr_output_text["sentences"]:
     word_wbb_dict = {}
     
     for word in sentence["words"]:
@@ -350,7 +349,7 @@ for sentence in ocr_output["sentences"]:
    
     line = sentence["sentence"].strip()
 
-    print line
+    # print line
 
     line_counter += 1
     if len(line) > 3:
@@ -472,5 +471,10 @@ products["lines"] = productList
 nltkResult = {}
 nltkResult["ie_result"] = products
 
-out_nltk_json = open(abspath+requestID + '_nltk.json', 'w')
+out_nltk_json = open(abspath+requestID + '.nltk.json', 'w')
 json.dump(nltkResult, out_nltk_json)
+
+out_nltk_json.close()
+
+highlightproducts(imagepath)
+
