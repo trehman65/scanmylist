@@ -28,7 +28,7 @@ import argparse
 import io
 import sys
 from gvocr import detect_text
-from plotrect import highlightproducts
+# from plotrect import highlightproducts
 from google.cloud import vision
 
 
@@ -476,5 +476,5 @@ json.dump(nltkResult, out_nltk_json)
 
 out_nltk_json.close()
 
-highlightproducts(imagepath)
+# highlightproducts(imagepath)
 
