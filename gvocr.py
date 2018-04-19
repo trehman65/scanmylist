@@ -3,7 +3,7 @@ import io
 import sys
 import json
 import random
-import cv2
+# import cv2
 import string
 
 from google.cloud import vision
@@ -26,7 +26,7 @@ def detect_text(path):
     response = client.text_detection(image=image)
     texts = response.text_annotations
 
-    imageOpenCV = cv2.imread(path)
+    # imageOpenCV = cv2.imread(path)
 
     data={}
     ocr_output=""
