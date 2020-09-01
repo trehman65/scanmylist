@@ -9,3 +9,6 @@ print ('ok last test')
 
 print('lol')
 print('I think i figured it out')
+
+print('lol')
+print('I think i figured it out')
