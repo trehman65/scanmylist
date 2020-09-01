@@ -11,3 +11,6 @@ def sample_process(imn):
 
 if __name__ == "__main__":
 	Parallel(n_jobs=4)(delayed(sample_process)(imn) for imn in os.listdir('images/'))
+
+
+print('test')
