@@ -5,7 +5,7 @@ import numpy as np
 import sys
 import os
 
-
+print('test')
 
 abspath=sys.argv[2]
 
